@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_expense_trakr/user_transactions.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -31,7 +29,9 @@ class MyHomePage extends StatelessWidget {
         centerTitle: true,
         title: Text(title),
       ),
-      body: Column(
+      body: SingleChildScrollView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
             width: double.infinity,
@@ -46,7 +46,7 @@ class MyHomePage extends StatelessWidget {
           ),
           UserTransactions(),
         ],
-      ),
+      )),
     );
   }
 }
