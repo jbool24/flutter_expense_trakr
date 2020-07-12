@@ -16,19 +16,16 @@ class Transaction {
   }
 
   static Transaction getByID(String id) {
-    print('called getByID');
     return txEntries.where((tx) => tx.id == id).first;
   }
 
   static List<Transaction> addNew(String title, double amount,
       [DateTime date]) {
-    print('called addNew');
     txEntries.add(Transaction(title, amount, date));
     return entries;
   }
 
   static List<Transaction> delete(String id) {
-    print('called delete');
     Function removeId(String id) => (tx) => tx.id == id;
 
     txEntries.removeWhere(removeId(id));
@@ -37,12 +34,10 @@ class Transaction {
   }
 
   static List<Transaction> update(String id, Object update) {
-    print('called update');
     return txEntries;
   }
 
   static List<Transaction> get entries {
-    print('called get entries');
     return [...txEntries];
   }
 }

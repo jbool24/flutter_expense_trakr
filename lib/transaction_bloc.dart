@@ -7,17 +7,11 @@ class TransactionController implements Observer {
   @override
   void register(Observable subject) {
     listeners.add(subject);
-    print('called register: $subject');
-    print('Listeners count: ${listeners.length}');
   }
 
   @override
   void notify() {
-    print('called notify');
-    print(listeners.length);
     for (Observable listener in listeners) {
-      print('Listener');
-      print(listener.toString());
       listener.update(Transaction.entries);
     }
   }
