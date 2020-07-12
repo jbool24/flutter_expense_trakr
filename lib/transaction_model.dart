@@ -1,14 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
-final List<Transaction> txEntries = [
-  Transaction(id: '1', title: 'New Shirt', amount: 60.00, date: DateTime.now()),
-  Transaction(id: '2', title: 'New Shoes', amount: 80.00, date: DateTime.now()),
-  Transaction(id: '3', title: 'New Pants', amount: 80.00, date: DateTime.now()),
-  Transaction(id: '4', title: 'New Belt', amount: 80.00, date: DateTime.now()),
-  Transaction(id: '5', title: 'Groceries', amount: 80.00, date: DateTime.now()),
-  Transaction(id: '6', title: 'Chew Toy', amount: 80.00, date: DateTime.now()),
-  Transaction(id: '7', title: 'Paper Cups', amount: 80.00, date: DateTime.now())
-];
+final List<Transaction> txEntries = [Transaction('Books', 12.00)];
 
 class Transaction {
   String id;
@@ -16,20 +8,41 @@ class Transaction {
   double amount;
   DateTime date;
 
-  Transaction(
-      {@required this.id,
-      @required this.title,
-      @required this.amount,
-      @required this.date});
+  Transaction(String title, double amount, [DateTime date]) {
+    this.id = Uuid().v4();
+    this.title = title;
+    this.amount = amount == null ? 0.0 : amount;
+    this.date = date == null ? DateTime.now() : date;
+  }
 
-  static List<Transaction> addNew(String title, double amount) {
-    entries.add(Transaction(
-        id: DateTime.now().toString(),
-        title: title,
-        amount: amount,
-        date: DateTime.now()));
+  static Transaction getByID(String id) {
+    print('called getByID');
+    return txEntries.where((tx) => tx.id == id).first;
+  }
+
+  static List<Transaction> addNew(String title, double amount,
+      [DateTime date]) {
+    print('called addNew');
+    txEntries.add(Transaction(title, amount, date));
     return entries;
   }
 
-  static get entries => txEntries;
+  static List<Transaction> delete(String id) {
+    print('called delete');
+    Function removeId(String id) => (tx) => tx.id == id;
+
+    txEntries.removeWhere(removeId(id));
+
+    return txEntries;
+  }
+
+  static List<Transaction> update(String id, Object update) {
+    print('called update');
+    return txEntries;
+  }
+
+  static List<Transaction> get entries {
+    print('called get entries');
+    return [...txEntries];
+  }
 }
