@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_expense_trakr/chart.dart';
 import 'package:flutter_expense_trakr/new_transaction.dart';
 import 'package:flutter_expense_trakr/theme.dart';
 import 'package:flutter_expense_trakr/transaction_bloc.dart';
-import 'package:flutter_expense_trakr/transaction_model.dart';
-import 'package:flutter_expense_trakr/user_transactions.dart';
+import 'package:flutter_expense_trakr/transaction_list.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,13 +18,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
+
+  @override
+  State<StatefulWidget> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final TransactionController _txController = TransactionController();
 
-  void _startAddNewTrasaction(BuildContext context) {
+  void _startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -37,37 +43,28 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(title),
+        title: Text(widget.title),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTrasaction(context),
+            onPressed: () => _startAddNewTransaction(context),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _startAddNewTrasaction(context),
+        onPressed: () => _startAddNewTransaction(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SingleChildScrollView(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            child: Card(
-              color: Colors.blue,
-              elevation: 10,
-              child: Text(
-                'Chart!!',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-            ),
-          ),
-          UserTransactions(Transaction.entries),
-        ],
-      )),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Chart(_txController),
+            TransactionList(_txController),
+          ],
+        ),
+      ),
     );
   }
 }

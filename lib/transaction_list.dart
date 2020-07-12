@@ -1,48 +1,100 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_expense_trakr/observables.dart';
+import 'package:flutter_expense_trakr/transaction_bloc.dart';
+import 'package:flutter_expense_trakr/transaction_model.dart';
 import 'package:intl/intl.dart';
 
-import './transaction.dart';
+import './transaction_model.dart';
 
-class TransactionList extends StatelessWidget {
-  final List<Transaction> _transactions;
+class TransactionList extends StatefulWidget {
+  final TransactionController _txController;
 
-  TransactionList(this._transactions);
+  TransactionList(this._txController);
 
-  Card transactionItem(Transaction tx) {
-    return Card(
-      child: Row(children: <Widget>[
-        Container(
-            margin: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 15,
-            ),
-            padding: EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.purple, width: 2),
-            ),
-            child: Text('\$${tx.amount.toStringAsFixed(2)}')),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-          Text(
-            tx.title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.left,
+  @override
+  State<StatefulWidget> createState() => _TransactionListState();
+}
+
+class _TransactionListState extends State<TransactionList>
+    implements Observable {
+  List<Transaction> _txList;
+
+  @override
+  void initState() {
+    super.initState();
+    widget._txController.register(this);
+    this._txList = Transaction.entries;
+  }
+
+  @override
+  void update(list) {
+    print(list);
+    setState(() {
+      print('Called set State in List');
+      _txList = list;
+    });
+  }
+
+  void _delete(id) {
+    widget._txController.delete(id);
+  }
+
+  Widget transactionItem(BuildContext context, Transaction tx) {
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 30,
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: FittedBox(
+            child: Text('\$${tx.amount.toStringAsFixed(2)}'),
           ),
-          Text(DateFormat('MM-dd-yyyy').format(tx.date),
-              style: TextStyle(color: Colors.grey))
-        ]),
-      ]),
+        ),
+      ),
+      title: Text(
+        tx.title,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.left,
+      ),
+      subtitle: Text(
+        DateFormat('MM-dd-yyyy').format(tx.date),
+        style: TextStyle(color: Colors.grey),
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        color: Theme.of(context).errorColor,
+        onPressed: () => _delete(tx.id),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 400,
-        child: ListView.builder(
-          itemBuilder: (ctx, index) {
-            return transactionItem(_transactions[index]);
-          },
-          itemCount: _transactions.length,
-        ));
+        height: 600,
+        child: Transaction.entries.isEmpty
+            ? Column(children: <Widget>[
+                Text(
+                  'No transactions added',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+                SizedBox(height: 20),
+                Container(
+                    height: 200,
+                    child: Image.asset('assets/images/waiting.png'))
+              ])
+            : ListView.builder(
+                itemBuilder: (ctx, index) {
+                  return Card(
+                      elevation: 6,
+                      margin: EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 5,
+                      ),
+                      child: transactionItem(context, _txList[index]));
+                },
+                itemCount: _txList.length,
+              ));
   }
 }
